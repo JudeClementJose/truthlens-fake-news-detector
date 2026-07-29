@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Mail, Lock, ArrowRight, UserCheck } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, ArrowRight, UserCheck, Shield } from 'lucide-react';
 
 export const Login = ({ onNavigateRegister, onNavigateForgotPassword, onSuccessLogin }) => {
   const { login } = useAuth();
@@ -25,7 +25,10 @@ export const Login = ({ onNavigateRegister, onNavigateForgotPassword, onSuccessL
   };
 
   const fillDemo = (role) => {
-    if (role === 'admin') {
+    if (role === 'jude') {
+      setEmail('judeclmentjose4@gmail.com');
+      setPassword('a 446633');
+    } else if (role === 'admin') {
       setEmail('admin@truthlens.ai');
       setPassword('Admin@12345');
     } else {
@@ -47,10 +50,17 @@ export const Login = ({ onNavigateRegister, onNavigateForgotPassword, onSuccessL
           <p className="text-xs text-slate-500 dark:text-slate-400">Access your analysis history, saved metrics, and AI detector.</p>
         </div>
 
-        {/* Demo Quick Fill Buttons */}
+        {/* Quick Fill Buttons */}
         <div className="p-3 bg-brand-50 dark:bg-brand-950/60 rounded-xl border border-brand-200 dark:border-brand-900 space-y-2">
-          <span className="text-xs font-semibold text-brand-700 dark:text-brand-300 block">Quick Demo Login:</span>
+          <span className="text-xs font-semibold text-brand-700 dark:text-brand-300 block">Quick Account Fill:</span>
           <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => fillDemo('jude')}
+              className="col-span-2 py-1.5 px-2 bg-gradient-to-r from-amber-500 to-brand-500 text-white text-xs font-bold rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-1 shadow"
+            >
+              <Shield className="w-3.5 h-3.5" /> Jude Clement Jose (Admin)
+            </button>
             <button
               type="button"
               onClick={() => fillDemo('user')}

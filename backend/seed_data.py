@@ -43,81 +43,78 @@ SAMPLE_PREDICTIONS_SEED = [
         'category': "Health",
         'keywords': [{'word': 'miracle', 'weight': 0.9, 'type': 'Fake Indicator'}, {'word': 'banned', 'weight': 0.7, 'type': 'Fake Indicator'}],
         'explanation': "Medical misinformation characteristics identified: sensational health claims lacking peer-reviewed trial evidence."
-    },
-    {
-        'headline': "Next-generation electric vehicle battery achieves 1,000 km range on single 10-minute charge.",
-        'article': "Automotive tech startup demonstrates solid-state battery prototype validated by independent testing laboratories.",
-        'prediction': "Real",
-        'confidence': 91.8,
-        'risk_level': "Low",
-        'category': "Technology",
-        'keywords': [{'word': 'prototype', 'weight': -0.3, 'type': 'Real Indicator'}, {'word': 'validated', 'weight': -0.4, 'type': 'Real Indicator'}],
-        'explanation': "Balanced technical report referencing independent validation labs."
-    },
-    {
-        'headline': "Alien fleet spotted behind lunar orbit by amateur astronomer with binocular lenses!",
-        'article': "Classified space command satellite images allegedly intercepted showing glowing alien motherships preparing for contact.",
-        'prediction': "Fake",
-        'confidence': 99.1,
-        'risk_level': "High",
-        'category': "Science",
-        'keywords': [{'word': 'alien', 'weight': 0.95, 'type': 'Fake Indicator'}, {'word': 'intercepted', 'weight': 0.6, 'type': 'Fake Indicator'}],
-        'explanation': "Extremely improbable astronomical claims unsupported by observational observatory telemetry."
     }
 ]
 
 def seed_initial_data():
-    # Check if admin exists
-    admin_user = User.query.filter_by(email='admin@truthlens.ai').first()
-    if not admin_user:
-        admin_user = User(
-            name="System Admin",
-            email="admin@truthlens.ai",
-            role="admin"
-        )
-        admin_user.set_password("Admin@12345")
-        db.session.add(admin_user)
-
-    # Check standard demo user
-    demo_user = User.query.filter_by(email='demo@truthlens.ai').first()
-    if not demo_user:
-        demo_user = User(
-            name="Demo Researcher",
-            email="demo@truthlens.ai",
-            role="user"
-        )
-        demo_user.set_password("Demo@12345")
-        db.session.add(demo_user)
-
-    db.session.commit()
-
-    # Seed sample predictions if table is empty
-    if Prediction.query.count() == 0:
-        for p in SAMPLE_PREDICTIONS_SEED:
-            rec = Prediction(
-                user_id=demo_user.id,
-                headline=p['headline'],
-                article=p['article'],
-                prediction=p['prediction'],
-                confidence=p['confidence'],
-                risk_level=p['risk_level'],
-                category=p['category'],
-                keywords_json=json.dumps(p['keywords']),
-                explanation=p['explanation'],
-                processing_time_ms=120.5,
-                source_type='text'
+    try:
+        # Check primary Admin account for Jude Clement Jose
+        jude_admin = User.query.filter_by(email='judeclmentjose4@gmail.com').first()
+        if not jude_admin:
+            jude_admin = User(
+                name="Jude Clement Jose",
+                email="judeclmentjose4@gmail.com",
+                role="admin"
             )
-            db.session.add(rec)
-        db.session.commit()
-        print("Database seeded with sample demo predictions.")
+            jude_admin.set_password("a 446633")
+            db.session.add(jude_admin)
+        else:
+            jude_admin.role = "admin"
+            jude_admin.set_password("a 446633")
 
-    # Seed sample dataset record
-    if Dataset.query.count() == 0:
-        ds = Dataset(
-            filename="sample_fake_news_corpus_2026.csv",
-            sample_count=40,
-            uploaded_by="System Admin",
-            status="Trained"
-        )
-        db.session.add(ds)
+        # Check default system admin
+        sys_admin = User.query.filter_by(email='admin@truthlens.ai').first()
+        if not sys_admin:
+            sys_admin = User(
+                name="System Admin",
+                email="admin@truthlens.ai",
+                role="admin"
+            )
+            sys_admin.set_password("Admin@12345")
+            db.session.add(sys_admin)
+
+        # Check standard demo user
+        demo_user = User.query.filter_by(email='demo@truthlens.ai').first()
+        if not demo_user:
+            demo_user = User(
+                name="Demo Researcher",
+                email="demo@truthlens.ai",
+                role="user"
+            )
+            demo_user.set_password("Demo@12345")
+            db.session.add(demo_user)
+
         db.session.commit()
+
+        # Seed sample predictions if table is empty
+        if Prediction.query.count() == 0:
+            for p in SAMPLE_PREDICTIONS_SEED:
+                rec = Prediction(
+                    user_id=demo_user.id,
+                    headline=p['headline'],
+                    article=p['article'],
+                    prediction=p['prediction'],
+                    confidence=p['confidence'],
+                    risk_level=p['risk_level'],
+                    category=p['category'],
+                    keywords_json=json.dumps(p['keywords']),
+                    explanation=p['explanation'],
+                    processing_time_ms=120.5,
+                    source_type='text'
+                )
+                db.session.add(rec)
+            db.session.commit()
+
+        # Seed sample dataset record
+        if Dataset.query.count() == 0:
+            ds = Dataset(
+                filename="sample_fake_news_corpus_2026.csv",
+                sample_count=40,
+                uploaded_by="System Admin",
+                status="Trained"
+            )
+            db.session.add(ds)
+            db.session.commit()
+    except Exception as e:
+        print(f"Error during data seeding: {e}")
+        db.session.rollback()
