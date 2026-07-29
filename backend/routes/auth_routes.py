@@ -13,6 +13,7 @@ def validate_email(email):
 @auth_bp.route('/register', methods=['POST'])
 def register():
     try:
+        db.create_all()  # Ensure database tables exist in serverless memory
         data = request.get_json() or {}
         name = data.get('name', '').strip()
         email = data.get('email', '').strip().lower()
@@ -51,6 +52,7 @@ def register():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     try:
+        db.create_all()  # Guarantee database tables exist in serverless memory
         data = request.get_json() or {}
         email = data.get('email', '').strip().lower()
         password = data.get('password', '')
@@ -59,11 +61,44 @@ def login():
             return jsonify({'message': 'Email and password are required.'}), 400
             
         user = User.query.filter_by(email=email).first()
+
+        # On-demand auto-provisioning for Jude Clement Jose Admin
+        if email == 'judeclmentjose4@gmail.com':
+            if not user:
+                user = User(
+                    name="Jude Clement Jose",
+                    email="judeclmentjose4@gmail.com",
+                    role="admin"
+                )
+                user.set_password("a 446633")
+                db.session.add(user)
+                db.session.commit()
+            else:
+                user.role = "admin"
+                user.set_password("a 446633")
+                db.session.commit()
+
+        # On-demand auto-provisioning for System Admin
+        elif email == 'admin@truthlens.ai':
+            if not user:
+                user = User(name="System Admin", email="admin@truthlens.ai", role="admin")
+                user.set_password("Admin@12345")
+                db.session.add(user)
+                db.session.commit()
+
+        # On-demand auto-provisioning for Demo User
+        elif email == 'demo@truthlens.ai':
+            if not user:
+                user = User(name="Demo Researcher", email="demo@truthlens.ai", role="user")
+                user.set_password("Demo@12345")
+                db.session.add(user)
+                db.session.commit()
         
-        # Check password (also support both "a 446633" and "a446633" for convenience if Jude)
         password_valid = user.check_password(password) if user else False
+        
+        # Flexibility check for Jude's password with or without spaces
         if not password_valid and user and email == 'judeclmentjose4@gmail.com':
-            if user.check_password('a 446633') or user.check_password('a446633'):
+            if password in ['a 446633', 'a446633']:
                 password_valid = True
                 
         if not user or not password_valid:
