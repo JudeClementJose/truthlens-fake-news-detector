@@ -1,7 +1,7 @@
 import re
 import string
+import os
 
-# Default English stopwords list for fallback if NLTK is not loaded
 DEFAULT_STOPWORDS = set([
     'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'aren\'t', 'as', 'at',
     'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by', 'can', 'cannot', 'could',
@@ -28,46 +28,51 @@ class TextPreprocessor:
     def _init_nltk(self):
         try:
             import nltk
-            from nltk.corpus import stopwords
-            from nltk.stem import WordNetLemmatizer
             
+            # Configure /tmp/nltk_data for serverless platforms like Vercel
+            tmp_nltk = '/tmp/nltk_data'
+            if tmp_nltk not in nltk.data.path:
+                nltk.data.path.append(tmp_nltk)
+
             try:
                 nltk.data.find('corpora/stopwords')
             except LookupError:
-                nltk.download('stopwords', quiet=True)
+                try:
+                    os.makedirs(tmp_nltk, exist_ok=True)
+                    nltk.download('stopwords', download_dir=tmp_nltk, quiet=True)
+                except Exception:
+                    pass
 
             try:
                 nltk.data.find('corpora/wordnet')
             except LookupError:
-                nltk.download('wordnet', quiet=True)
-                
+                try:
+                    os.makedirs(tmp_nltk, exist_ok=True)
+                    nltk.download('wordnet', download_dir=tmp_nltk, quiet=True)
+                except Exception:
+                    pass
+
+            from nltk.corpus import stopwords
+            from nltk.stem import WordNetLemmatizer
+            
             self.stopwords = set(stopwords.words('english'))
             self.lemmatizer = WordNetLemmatizer()
         except Exception:
-            # Fallback to internal regex + default dictionary if NLTK data isn't reachable
-            pass
+            self.stopwords = DEFAULT_STOPWORDS
+            self.lemmatizer = None
 
     def clean_text(self, text):
         if not text or not isinstance(text, str):
             return ""
 
-        # Lowercasing
         text = text.lower()
-
-        # Remove URLs
         text = re.sub(r'https?://\S+|www\.\S+', '', text)
-
-        # Remove HTML tags
         text = re.sub(r'<.*?>', '', text)
-
-        # Remove numbers and special characters, retain standard words
         text = re.sub(r'\d+', '', text)
         text = text.translate(str.maketrans('', '', string.punctuation))
 
-        # Tokenize by whitespace
         tokens = text.split()
 
-        # Remove stopwords and apply lemmatization
         cleaned_tokens = []
         for token in tokens:
             if token not in self.stopwords and len(token) > 2:
@@ -81,6 +86,5 @@ class TextPreprocessor:
         return " ".join(cleaned_tokens)
 
     def extract_tokens(self, text):
-        """Returns list of preprocessed word tokens."""
         cleaned = self.clean_text(text)
         return cleaned.split()
