@@ -1,4 +1,11 @@
 import os
+import sys
+
+# Ensure backend folder is in Python search path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from config import Config
@@ -14,8 +21,8 @@ def create_app():
     app = Flask(__name__, static_folder='uploads')
     app.config.from_object(Config)
 
-    # Enable CORS for frontend Vite application
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Enable CORS for all API routes
+    CORS(app, resources={r"/api/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"]}})
 
     # Initialize Database
     init_db(app)
@@ -29,7 +36,10 @@ def create_app():
 
     # Seed demo data within app context
     with app.app_context():
-        seed_initial_data()
+        try:
+            seed_initial_data()
+        except Exception as e:
+            print(f"Startup seeding notice: {e}")
 
     @app.route('/api/health', methods=['GET'])
     def health_check():
@@ -49,7 +59,8 @@ def create_app():
 
     return app
 
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     print("TruthLens AI Flask Backend running on http://127.0.0.1:5000")
     app.run(host='0.0.0.0', port=5000, debug=True)
