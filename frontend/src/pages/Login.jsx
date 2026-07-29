@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Mail, Lock, ArrowRight, UserCheck, Shield } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, ArrowRight } from 'lucide-react';
 
 export const Login = ({ onNavigateRegister, onNavigateForgotPassword, onSuccessLogin }) => {
   const { login } = useAuth();
@@ -24,19 +24,6 @@ export const Login = ({ onNavigateRegister, onNavigateForgotPassword, onSuccessL
     }
   };
 
-  const fillDemo = (role) => {
-    if (role === 'jude') {
-      setEmail('judeclmentjose4@gmail.com');
-      setPassword('a 446633');
-    } else if (role === 'admin') {
-      setEmail('admin@truthlens.ai');
-      setPassword('Admin@12345');
-    } else {
-      setEmail('demo@truthlens.ai');
-      setPassword('Demo@12345');
-    }
-  };
-
   return (
     <div className="min-h-[75vh] flex items-center justify-center p-4 animate-fade-in">
       <div className="glass-panel p-8 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-6">
@@ -48,34 +35,6 @@ export const Login = ({ onNavigateRegister, onNavigateForgotPassword, onSuccessL
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Sign In to TruthLens</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">Access your analysis history, saved metrics, and AI detector.</p>
-        </div>
-
-        {/* Quick Fill Buttons */}
-        <div className="p-3 bg-brand-50 dark:bg-brand-950/60 rounded-xl border border-brand-200 dark:border-brand-900 space-y-2">
-          <span className="text-xs font-semibold text-brand-700 dark:text-brand-300 block">Quick Account Fill:</span>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => fillDemo('jude')}
-              className="col-span-2 py-1.5 px-2 bg-gradient-to-r from-amber-500 to-brand-500 text-white text-xs font-bold rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-1 shadow"
-            >
-              <Shield className="w-3.5 h-3.5" /> Jude Clement Jose (Admin)
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo('user')}
-              className="py-1.5 px-2 bg-white dark:bg-slate-800 text-xs font-medium rounded-lg border border-brand-200 dark:border-brand-800 text-slate-700 dark:text-slate-200 hover:bg-brand-100 transition-colors flex items-center justify-center gap-1"
-            >
-              <UserCheck className="w-3.5 h-3.5 text-brand-500" /> Demo User
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo('admin')}
-              className="py-1.5 px-2 bg-white dark:bg-slate-800 text-xs font-medium rounded-lg border border-brand-200 dark:border-brand-800 text-slate-700 dark:text-slate-200 hover:bg-brand-100 transition-colors flex items-center justify-center gap-1"
-            >
-              <Lock className="w-3.5 h-3.5 text-amber-500" /> System Admin
-            </button>
-          </div>
         </div>
 
         {error && (
