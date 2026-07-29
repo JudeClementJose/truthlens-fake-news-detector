@@ -1,0 +1,118 @@
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { ShieldCheck, Mail, Lock, User, ArrowRight } from 'lucide-react';
+
+export const Register = ({ onNavigateLogin, onSuccessRegister }) => {
+  const { register } = useAuth();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    const res = await register(name, email, password);
+    setLoading(false);
+
+    if (res.success) {
+      onSuccessRegister();
+    } else {
+      setError(res.message);
+    }
+  };
+
+  return (
+    <div className="min-h-[75vh] flex items-center justify-center p-4 animate-fade-in">
+      <div className="glass-panel p-8 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-6">
+        
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-400 text-white flex items-center justify-center mx-auto shadow-lg shadow-brand-500/25">
+            <ShieldCheck className="w-7 h-7" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Create TruthLens Account</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Join the AI-powered news verification network.</p>
+        </div>
+
+        {error && (
+          <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-medium">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+            <div className="relative">
+              <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Dr. Alex Morgan"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="alex@research.org"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password</label>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 6 characters"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-semibold text-sm shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+          >
+            {loading ? 'Registering Account...' : 'Get Started Free'}
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </form>
+
+        <div className="text-center pt-2 border-t border-slate-200 dark:border-slate-800">
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            Already have an account?{' '}
+            <button
+              onClick={onNavigateLogin}
+              className="text-brand-600 dark:text-brand-400 font-semibold hover:underline"
+            >
+              Sign In
+            </button>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  );
+};
